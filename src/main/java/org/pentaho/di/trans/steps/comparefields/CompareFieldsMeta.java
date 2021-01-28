@@ -43,7 +43,7 @@ import org.w3c.dom.Node;
   i18nPackageName = "org.pentaho.di.trans.steps.comparefields",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow",
   forumUrl = "forums.pentaho.com/forumdisplay.php?135-Pentaho-Data-Integration-Kettle",
-  image = "org/pentaho/di/trans/steps/comparefields/images/CompareFields.png",
+  image = "org/pentaho/di/trans/steps/comparefields/resources/CompareFields.svg",
   isSeparateClassLoaderNeeded = false )
 public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface {
 
@@ -250,6 +250,7 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
 
   @Override
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
       ioMeta = new StepIOMeta( true, false, false, false, false, true );
 
