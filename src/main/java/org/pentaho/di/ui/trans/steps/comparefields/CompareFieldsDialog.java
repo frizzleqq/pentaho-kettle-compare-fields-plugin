@@ -225,12 +225,6 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     fdRemovedTarget.top = new FormAttachment( lastControl, margin );
     wRemovedTarget.setLayoutData( fdRemovedTarget );
     wRemovedTarget.setItems( outputStepNames );
-    wRemovedTarget.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent arg0 ) {
-        enableWidgets();
-      }
-    } );
     lastControl = wRemovedTarget;
 
     wlAddChangedFields = new Label( shell, SWT.RIGHT );
@@ -249,6 +243,11 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     fdAddChangedFields.top = new FormAttachment( lastControl, margin );
     wAddChangedFields.setLayoutData( fdAddChangedFields );
     lastControl = wAddChangedFields;
+    wAddChangedFields.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent arg0 ) {
+        enableWidgets();
+      }
+    } );
 
     wlFieldsListField = new Label( shell, SWT.RIGHT );
     wlFieldsListField.setText( BaseMessages.getString( PKG, "CompareFieldsDialog.FieldsListField.Label" ) );
