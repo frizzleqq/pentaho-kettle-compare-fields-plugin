@@ -1,8 +1,8 @@
 package org.pentaho.di.trans.steps.comparefields;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -56,7 +56,7 @@ public class CompareField {
 
   public void index( RowMetaInterface rowMeta ) throws KettleException {
 
-    if ( Const.isEmpty( referenceFieldname ) ) {
+    if ( Utils.isEmpty( referenceFieldname ) ) {
       throw new KettleException( BaseMessages.getString( PKG, "CompareField.Error.EmptyReferenceField" ) );
     }
     referenceFieldIndex = rowMeta.indexOfValue( referenceFieldname );
@@ -64,7 +64,7 @@ public class CompareField {
       throw new KettleException(
         BaseMessages.getString( PKG, "CompareField.Error.ReferenceFieldNotFound", referenceFieldname ) );
     }
-    if ( Const.isEmpty( compareFieldname ) ) {
+    if ( Utils.isEmpty( compareFieldname ) ) {
       throw new KettleException(
         BaseMessages.getString( PKG, "CompareField.Error.CompareFieldEmpty", referenceFieldname ) );
     }

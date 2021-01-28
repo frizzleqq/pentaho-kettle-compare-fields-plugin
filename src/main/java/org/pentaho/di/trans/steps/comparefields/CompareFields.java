@@ -7,13 +7,13 @@ package org.pentaho.di.trans.steps.comparefields;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -166,8 +166,8 @@ public class CompareFields extends BaseStep implements StepInterface {
     boolean allIdentical = !compareFields.isEmpty();
     boolean allReferenceNull = !compareFields.isEmpty();
     boolean allCompareNull = !compareFields.isEmpty();
-    boolean verifyAdded = !Const.isEmpty( meta.getAddedTargetStepname() );
-    boolean verifyRemoved = !Const.isEmpty( meta.getRemovedTargetStepname() );
+    boolean verifyAdded = !Utils.isEmpty( meta.getAddedTargetStepname() );
+    boolean verifyRemoved = !Utils.isEmpty( meta.getRemovedTargetStepname() );
 
     // Compare all the fields
     //
@@ -213,11 +213,11 @@ public class CompareFields extends BaseStep implements StepInterface {
     }
 
     String changedFieldNames = null;
-    if ( !Const.isEmpty( fieldsList ) ) {
+    if ( !Utils.isEmpty( fieldsList ) ) {
       StringBuilder b = new StringBuilder();
       for ( String fieldName : fieldsList ) {
         if ( b.length() > 0 ) {
-          b.append( ", " );
+          b.append( "," );
         }
         b.append( fieldName );
       }

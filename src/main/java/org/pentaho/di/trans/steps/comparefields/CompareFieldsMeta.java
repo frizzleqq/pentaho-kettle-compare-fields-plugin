@@ -3,16 +3,15 @@ package org.pentaho.di.trans.steps.comparefields;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -43,8 +42,8 @@ import org.w3c.dom.Node;
   i18nPackageName = "org.pentaho.di.trans.steps.comparefields",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow",
   forumUrl = "forums.pentaho.com/forumdisplay.php?135-Pentaho-Data-Integration-Kettle",
-  image = "org/pentaho/di/trans/steps/comparefields/resources/CompareFields.svg",
-  isSeparateClassLoaderNeeded = false )
+  image = "org/pentaho/di/trans/steps/comparefields/resources/CompareFields.svg"
+)
 public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = CompareFieldsMeta.class; // for i18n purposes, needed by Translator2!!
@@ -98,7 +97,7 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
 
     // See if we need to add the list of changed fields...
     //
-    if ( addingFieldsList && !Const.isEmpty( fieldsListFieldname ) ) {
+    if ( addingFieldsList && !Utils.isEmpty( fieldsListFieldname ) ) {
       try {
         ValueMetaInterface fieldsList = ValueMetaFactory.createValueMeta( fieldsListFieldname, ValueMetaInterface.TYPE_STRING );
         inputRowMeta.addValueMeta( fieldsList );
@@ -109,7 +108,7 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   @Override
-  public String getXML() throws KettleException {
+  public String getXML() {
     StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.addTagValue( CHANGED_TARGET_STEP, getStepname( changedTargetStep ) ) );
@@ -121,8 +120,8 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
     xml.append( XMLHandler.addTagValue( FIELDS_LIST_FIELD, fieldsListFieldname ) );
 
     xml.append( XMLHandler.openTag( XML_TAG_FIELDS ) );
-    for ( int i = 0; i < compareFields.size(); i++ ) {
-      xml.append( compareFields.get( i ).getXML() );
+    for (CompareField compareField : compareFields) {
+      xml.append(compareField.getXML());
     }
     xml.append( XMLHandler.closeTag( XML_TAG_FIELDS ) );
 
@@ -137,7 +136,7 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   @Override
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) {
 
     changedTargetStepname = XMLHandler.getTagValue( stepnode, CHANGED_TARGET_STEP );
     identicalTargetStepname = XMLHandler.getTagValue( stepnode, IDENTICAL_TARGET_STEP );

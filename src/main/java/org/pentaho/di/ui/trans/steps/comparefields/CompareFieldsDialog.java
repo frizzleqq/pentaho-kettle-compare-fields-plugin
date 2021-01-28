@@ -48,6 +48,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -401,7 +402,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void ok() {
-    if ( Const.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wStepname.getText() ) ) {
       return;
     }
 
