@@ -50,9 +50,13 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   private static Class<?> PKG = CompareFieldsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private static final String IDENTICAL_TARGET_STEP = "identical_target_step";
+  private static final int IDENTICAL_TARGET_STREAM = 0;
   private static final String CHANGED_TARGET_STEP = "changed_target_step";
+  private static final int CHANGED_TARGET_STREAM = 1;
   private static final String ADDED_TARGET_STEP = "added_target_step";
+  private static final int ADDED_TARGET_STREAM = 2;
   private static final String REMOVED_TARGET_STEP = "removed_target_step";
+  private static final int REMOVED_TARGET_STREAM = 3;
   private static final String ADD_FIELDS_LIST = "add_fields_list";
   private static final String FIELDS_LIST_FIELD = "fields_list_field";
 
@@ -202,6 +206,7 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
       ioMeta = new StepIOMeta( true, false, false, false,
               false, true );
 
+      // do not change order of this
       ioMeta.addStream( new Stream( StreamType.TARGET, null,
         BaseMessages.getString( PKG, "CompareFieldsMeta.TargetStream.Identical.Description" ),
         StreamIcon.TARGET, null ) );
@@ -252,35 +257,35 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getIdenticalTargetStepname() {
-    return getTargetStepName( 0 );
+    return getTargetStepName( IDENTICAL_TARGET_STREAM );
   }
 
   public void setIdenticalTargetStepname( String identicalTargetStepname ) {
-    getStepIOMeta().getTargetStreams().get( 0 ).setSubject( identicalTargetStepname );
+    getStepIOMeta().getTargetStreams().get( IDENTICAL_TARGET_STREAM ).setSubject( identicalTargetStepname );
   }
 
   public String getChangedTargetStepname() {
-    return getTargetStepName( 1 );
+    return getTargetStepName( CHANGED_TARGET_STREAM );
   }
 
   public void setChangedTargetStepname( String changedTargetStepname ) {
-    getStepIOMeta().getTargetStreams().get( 1 ).setSubject( changedTargetStepname );
+    getStepIOMeta().getTargetStreams().get( CHANGED_TARGET_STREAM ).setSubject( changedTargetStepname );
   }
 
   public String getAddedTargetStepname() {
-    return getTargetStepName( 2 );
+    return getTargetStepName( ADDED_TARGET_STREAM );
   }
 
   public void setAddedTargetStepname( String addedTargetStepname ) {
-    getStepIOMeta().getTargetStreams().get( 2 ).setSubject( addedTargetStepname );
+    getStepIOMeta().getTargetStreams().get( ADDED_TARGET_STREAM ).setSubject( addedTargetStepname );
   }
 
   public String getRemovedTargetStepname() {
-    return getTargetStepName( 3 );
+    return getTargetStepName( REMOVED_TARGET_STREAM );
   }
 
   public void setRemovedTargetStepname( String removedTargetStepname ) {
-    getStepIOMeta().getTargetStreams().get( 3 ).setSubject( removedTargetStepname );
+    getStepIOMeta().getTargetStreams().get( REMOVED_TARGET_STREAM ).setSubject( removedTargetStepname );
   }
 
   public boolean isAddingFieldsList() {
@@ -292,35 +297,35 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public StepMeta getIdenticalTargetStepMeta() {
-    return getStepIOMeta().getTargetStreams().get( 0 ).getStepMeta();
+    return getStepIOMeta().getTargetStreams().get( IDENTICAL_TARGET_STREAM ).getStepMeta();
   }
 
   public void setIdenticalTargetStepMeta(StepMeta identicalTargetStepMeta) {
-    getStepIOMeta().getTargetStreams().get( 0 ).setStepMeta(identicalTargetStepMeta);
+    getStepIOMeta().getTargetStreams().get( IDENTICAL_TARGET_STREAM ).setStepMeta(identicalTargetStepMeta);
   }
 
   public StepMeta getChangedTargetStepMeta() {
-    return getStepIOMeta().getTargetStreams().get( 1 ).getStepMeta();
+    return getStepIOMeta().getTargetStreams().get( CHANGED_TARGET_STREAM ).getStepMeta();
   }
 
   public void setChangedTargetStepMeta(StepMeta changedTargetStepMeta) {
-    getStepIOMeta().getTargetStreams().get( 1 ).setStepMeta(changedTargetStepMeta);
+    getStepIOMeta().getTargetStreams().get( CHANGED_TARGET_STREAM ).setStepMeta(changedTargetStepMeta);
   }
 
   public StepMeta getAddedTargetStepMeta() {
-    return getStepIOMeta().getTargetStreams().get( 2 ).getStepMeta();
+    return getStepIOMeta().getTargetStreams().get( ADDED_TARGET_STREAM ).getStepMeta();
   }
 
   public void setAddedTargetStepMeta(StepMeta addedTargetStepMeta) {
-    getStepIOMeta().getTargetStreams().get( 2 ).setStepMeta(addedTargetStepMeta);
+    getStepIOMeta().getTargetStreams().get( ADDED_TARGET_STREAM ).setStepMeta(addedTargetStepMeta);
   }
 
   public StepMeta getRemovedTargetStepMeta() {
-    return getStepIOMeta().getTargetStreams().get( 3 ).getStepMeta();
+    return getStepIOMeta().getTargetStreams().get( REMOVED_TARGET_STREAM ).getStepMeta();
   }
 
   public void setRemovedTargetStepMeta(StepMeta removedTargetStepMeta) {
-    getStepIOMeta().getTargetStreams().get( 3 ).setStepMeta(removedTargetStepMeta);
+    getStepIOMeta().getTargetStreams().get( REMOVED_TARGET_STREAM ).setStepMeta(removedTargetStepMeta);
   }
 
   public String getFieldsListFieldname() {
