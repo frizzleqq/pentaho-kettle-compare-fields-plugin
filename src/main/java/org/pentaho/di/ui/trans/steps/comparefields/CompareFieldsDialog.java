@@ -363,10 +363,10 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    wIdenticalTarget.setText( getStepname( input.getIdenticalTargetStep() ) );
-    wChangedTarget.setText( getStepname( input.getChangedTargetStep() ) );
-    wAddedTarget.setText( getStepname( input.getAddedTargetStep() ) );
-    wRemovedTarget.setText( getStepname( input.getRemovedTargetStep() ) );
+    wIdenticalTarget.setText( getStepname( input.getIdenticalTargetStepMeta() ) );
+    wChangedTarget.setText( getStepname( input.getChangedTargetStepMeta() ) );
+    wAddedTarget.setText( getStepname( input.getAddedTargetStepMeta() ) );
+    wRemovedTarget.setText( getStepname( input.getRemovedTargetStepMeta() ) );
     wAddChangedFields.setSelection( input.isAddingFieldsList() );
     wFieldsListField.setText( Const.NVL( input.getFieldsListFieldname(), "" ) );
 
@@ -406,10 +406,10 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
       return;
     }
 
-    input.setIdenticalTargetStep( findStep( wIdenticalTarget.getText() ) );
-    input.setChangedTargetStep( findStep( wChangedTarget.getText() ) );
-    input.setAddedTargetStep( findStep( wAddedTarget.getText() ) );
-    input.setRemovedTargetStep( findStep( wRemovedTarget.getText() ) );
+    input.setIdenticalTargetStepMeta( findStep( wIdenticalTarget.getText() ) );
+    input.setChangedTargetStepMeta( findStep( wChangedTarget.getText() ) );
+    input.setAddedTargetStepMeta( findStep( wAddedTarget.getText() ) );
+    input.setRemovedTargetStepMeta( findStep( wRemovedTarget.getText() ) );
     input.setAddingFieldsList( wAddChangedFields.getSelection() );
     input.setFieldsListFieldname( wFieldsListField.getText() );
 

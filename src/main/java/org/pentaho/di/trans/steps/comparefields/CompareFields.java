@@ -76,36 +76,36 @@ public class CompareFields extends BaseStep implements StepInterface {
         field.index( getInputRowMeta() );
       }
 
-      if ( meta.getIdenticalTargetStep() != null ) {
-        data.identicalRowSet = findOutputRowSet( meta.getIdenticalTargetStep().getName() );
+      if ( meta.getIdenticalTargetStepMeta() != null ) {
+        data.identicalRowSet = findOutputRowSet( meta.getIdenticalTargetStepMeta().getName() );
         if ( data.identicalRowSet == null ) {
           throw new KettleException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindIdenticalOutputStep",
-              meta.getIdenticalTargetStep().getName() ) );
+              meta.getIdenticalTargetStepMeta().getName() ) );
         }
       }
-      if ( meta.getChangedTargetStep() != null ) {
-        data.changedRowSet = findOutputRowSet( meta.getChangedTargetStep().getName() );
+      if ( meta.getChangedTargetStepMeta() != null ) {
+        data.changedRowSet = findOutputRowSet( meta.getChangedTargetStepMeta().getName() );
         if ( data.changedRowSet == null ) {
           throw new KettleException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindChangedOutputStep",
-              meta.getChangedTargetStep().getName() ) );
+              meta.getChangedTargetStepMeta().getName() ) );
         }
       }
-      if ( meta.getAddedTargetStep() != null ) {
-        data.addedRowSet = findOutputRowSet( meta.getAddedTargetStep().getName() );
+      if ( meta.getAddedTargetStepMeta() != null ) {
+        data.addedRowSet = findOutputRowSet( meta.getAddedTargetStepMeta().getName() );
         if ( data.addedRowSet == null ) {
           throw new KettleException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindAddedOutputStep",
-              meta.getAddedTargetStep().getName() ) );
+              meta.getAddedTargetStepMeta().getName() ) );
         }
       }
-      if ( meta.getRemovedTargetStep() != null ) {
-        data.removedRowSet = findOutputRowSet( meta.getRemovedTargetStep().getName() );
+      if ( meta.getRemovedTargetStepMeta() != null ) {
+        data.removedRowSet = findOutputRowSet( meta.getRemovedTargetStepMeta().getName() );
         if ( data.removedRowSet == null ) {
           throw new KettleException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindRemovedOutputStep",
-              meta.getRemovedTargetStep().getName() ) );
+              meta.getRemovedTargetStepMeta().getName() ) );
         }
       }
     }
