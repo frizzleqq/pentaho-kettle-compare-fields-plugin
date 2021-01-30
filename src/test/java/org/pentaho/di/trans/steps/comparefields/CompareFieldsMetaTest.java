@@ -38,7 +38,7 @@ public class CompareFieldsMetaTest {
         Map<String, String> setterMap = new HashMap<String, String>();
 
         Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-        attrValidatorMap.put( "identicalTargetStepname", new StringLoadSaveValidator() );
+        attrValidatorMap.put( "identicalTargetStepMeta", new StringLoadSaveValidator() );
         attrValidatorMap.put( "changedTargetStepMeta", new StringLoadSaveValidator() );
         attrValidatorMap.put( "addedTargetStepMeta", new StringLoadSaveValidator() );
         attrValidatorMap.put( "removedTargetStepMeta", new StringLoadSaveValidator() );

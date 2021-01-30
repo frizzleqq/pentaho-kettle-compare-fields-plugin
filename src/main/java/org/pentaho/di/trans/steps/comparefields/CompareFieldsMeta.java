@@ -2,6 +2,7 @@ package org.pentaho.di.trans.steps.comparefields;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -59,15 +60,6 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
 
   private List<CompareField> compareFields;
 
-  private String identicalTargetStepname;
-  private StepMeta identicalTargetStepMeta;
-  private String changedTargetStepname;
-  private StepMeta changedTargetStepMeta;
-  private String addedTargetStepname;
-  private StepMeta addedTargetStepMeta;
-  private String removedTargetStepname;
-  private StepMeta removedTargetStepMeta;
-
   private boolean addingFieldsList;
   private String fieldsListFieldname;
 
@@ -112,10 +104,10 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   public String getXML() {
     StringBuilder xml = new StringBuilder();
 
-    xml.append( XMLHandler.addTagValue( IDENTICAL_TARGET_STEP, getStepname(identicalTargetStepMeta) ) );
-    xml.append( XMLHandler.addTagValue( CHANGED_TARGET_STEP, getStepname(changedTargetStepMeta) ) );
-    xml.append( XMLHandler.addTagValue( ADDED_TARGET_STEP, getStepname(addedTargetStepMeta) ) );
-    xml.append( XMLHandler.addTagValue( REMOVED_TARGET_STEP, getStepname(removedTargetStepMeta) ) );
+    xml.append( XMLHandler.addTagValue( IDENTICAL_TARGET_STEP, getIdenticalTargetStepname() ) );
+    xml.append( XMLHandler.addTagValue( CHANGED_TARGET_STEP, getChangedTargetStepname() ) );
+    xml.append( XMLHandler.addTagValue( ADDED_TARGET_STEP, getAddedTargetStepname() ) );
+    xml.append( XMLHandler.addTagValue( REMOVED_TARGET_STEP, getRemovedTargetStepname() ) );
 
     xml.append( XMLHandler.addTagValue( ADD_FIELDS_LIST, addingFieldsList ) );
     xml.append( XMLHandler.addTagValue( FIELDS_LIST_FIELD, fieldsListFieldname ) );
@@ -139,10 +131,10 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) {
 
-    identicalTargetStepname = XMLHandler.getTagValue( stepnode, IDENTICAL_TARGET_STEP );
-    changedTargetStepname = XMLHandler.getTagValue( stepnode, CHANGED_TARGET_STEP );
-    addedTargetStepname = XMLHandler.getTagValue( stepnode, ADDED_TARGET_STEP );
-    removedTargetStepname = XMLHandler.getTagValue( stepnode, REMOVED_TARGET_STEP );
+    setIdenticalTargetStepname( XMLHandler.getTagValue( stepnode, IDENTICAL_TARGET_STEP ) );
+    setChangedTargetStepname( XMLHandler.getTagValue( stepnode, CHANGED_TARGET_STEP ) );
+    setAddedTargetStepname( XMLHandler.getTagValue( stepnode, ADDED_TARGET_STEP ) );
+    setRemovedTargetStepname( XMLHandler.getTagValue( stepnode, REMOVED_TARGET_STEP ) );
 
     addingFieldsList = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, ADD_FIELDS_LIST ) );
     fieldsListFieldname = XMLHandler.getTagValue( stepnode, FIELDS_LIST_FIELD );
@@ -161,10 +153,10 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId transformationId, ObjectId stepId )
     throws KettleException {
 
-    rep.saveStepAttribute( transformationId, stepId, IDENTICAL_TARGET_STEP, getStepname(identicalTargetStepMeta) );
-    rep.saveStepAttribute( transformationId, stepId, CHANGED_TARGET_STEP, getStepname(changedTargetStepMeta) );
-    rep.saveStepAttribute( transformationId, stepId, ADDED_TARGET_STEP, getStepname(addedTargetStepMeta) );
-    rep.saveStepAttribute( transformationId, stepId, REMOVED_TARGET_STEP, getStepname(removedTargetStepMeta) );
+    rep.saveStepAttribute( transformationId, stepId, IDENTICAL_TARGET_STEP, getIdenticalTargetStepname() );
+    rep.saveStepAttribute( transformationId, stepId, CHANGED_TARGET_STEP, getChangedTargetStepname() );
+    rep.saveStepAttribute( transformationId, stepId, ADDED_TARGET_STEP, getAddedTargetStepname() );
+    rep.saveStepAttribute( transformationId, stepId, REMOVED_TARGET_STEP, getRemovedTargetStepname() );
 
     rep.saveStepAttribute( transformationId, stepId, ADD_FIELDS_LIST, addingFieldsList );
     rep.saveStepAttribute( transformationId, stepId, FIELDS_LIST_FIELD, fieldsListFieldname );
@@ -178,10 +170,10 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
     throws KettleException {
 
-    identicalTargetStepname = rep.getStepAttributeString( id_step, IDENTICAL_TARGET_STEP );
-    changedTargetStepname = rep.getStepAttributeString( id_step, CHANGED_TARGET_STEP );
-    addedTargetStepname = rep.getStepAttributeString( id_step, ADDED_TARGET_STEP );
-    removedTargetStepname = rep.getStepAttributeString( id_step, REMOVED_TARGET_STEP );
+    setIdenticalTargetStepname( rep.getStepAttributeString( id_step, IDENTICAL_TARGET_STEP ) );
+    setChangedTargetStepname( rep.getStepAttributeString( id_step, CHANGED_TARGET_STEP ) );
+    setAddedTargetStepname( rep.getStepAttributeString( id_step, ADDED_TARGET_STEP ) );
+    setRemovedTargetStepname( rep.getStepAttributeString( id_step, REMOVED_TARGET_STEP ) );
 
     addingFieldsList = rep.getStepAttributeBoolean( id_step, ADD_FIELDS_LIST );
     fieldsListFieldname = rep.getStepAttributeString( id_step, FIELDS_LIST_FIELD );
@@ -195,42 +187,10 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    identicalTargetStepMeta = StepMeta.findStep( steps, identicalTargetStepname );
-    changedTargetStepMeta = StepMeta.findStep( steps, changedTargetStepname );
-    addedTargetStepMeta = StepMeta.findStep( steps, addedTargetStepname );
-    removedTargetStepMeta = StepMeta.findStep( steps, removedTargetStepname );
-
-    resetStepIoMeta();
-  }
-
-  /**
-   * When an optional stream is selected, this method is called to handled the ETL metadata implications of that.
-   *
-   * @param stream The optional stream to handle.
-   */
-  public void handleStreamSelection( StreamInterface stream ) {
-    // This step targets another step.
-    // Make sure that we don't specify the same step for more than 1 target...
-    List<StreamInterface> targets = getStepIOMeta().getTargetStreams();
-    int index = targets.indexOf( stream );
-    StepMeta step = targets.get( index ).getStepMeta();
-    switch ( index ) {
-      case 0:
-        setIdenticalTargetStepMeta( step );
-        break;
-      case 1:
-        setChangedTargetStepMeta( step );
-        break;
-      case 2:
-        setAddedTargetStepMeta( step );
-        break;
-      case 3:
-        setRemovedTargetStepMeta( step );
-      default:
-        break;
+    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+    for ( StreamInterface stream : targetStreams ) {
+      stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
-
-    resetStepIoMeta(); // force stepIo to be recreated when it is next needed.
   }
 
   /**
@@ -242,16 +202,16 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
       ioMeta = new StepIOMeta( true, false, false, false,
               false, true );
 
-      ioMeta.addStream( new Stream( StreamType.TARGET, identicalTargetStepMeta,
+      ioMeta.addStream( new Stream( StreamType.TARGET, null,
         BaseMessages.getString( PKG, "CompareFieldsMeta.TargetStream.Identical.Description" ),
         StreamIcon.TARGET, null ) );
-      ioMeta.addStream( new Stream( StreamType.TARGET, changedTargetStepMeta,
+      ioMeta.addStream( new Stream( StreamType.TARGET, null,
         BaseMessages.getString( PKG, "CompareFieldsMeta.TargetStream.Changed.Description" ),
         StreamIcon.TARGET, null ) );
-      ioMeta.addStream( new Stream( StreamType.TARGET, addedTargetStepMeta,
+      ioMeta.addStream( new Stream( StreamType.TARGET, null,
         BaseMessages.getString( PKG, "CompareFieldsMeta.TargetStream.Added.Description" ),
         StreamIcon.TARGET, null ) );
-      ioMeta.addStream( new Stream( StreamType.TARGET, removedTargetStepMeta,
+      ioMeta.addStream( new Stream( StreamType.TARGET, null,
         BaseMessages.getString( PKG, "CompareFieldsMeta.TargetStream.Removed.Description" ),
         StreamIcon.TARGET, null ) );
 
@@ -260,6 +220,11 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     return ioMeta;
+  }
+
+  @Override
+  public void resetStepIoMeta() {
+    // so this does not reset ioMeta (set StreamTargets null)
   }
 
   /**
@@ -271,6 +236,13 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
     return true;
   }
 
+  private String getTargetStepName( int streamIndex ) {
+    StreamInterface stream = getStepIOMeta().getTargetStreams().get( streamIndex );
+    return java.util.stream.Stream.of( stream.getStepname(), stream.getSubject() )
+            .filter( Objects::nonNull )
+            .findFirst().map( Object::toString ).orElse( null );
+  }
+
   public List<CompareField> getCompareFields() {
     return compareFields;
   }
@@ -280,35 +252,35 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public String getIdenticalTargetStepname() {
-    return identicalTargetStepname;
+    return getTargetStepName( 0 );
   }
 
   public void setIdenticalTargetStepname( String identicalTargetStepname ) {
-    this.identicalTargetStepname = identicalTargetStepname;
+    getStepIOMeta().getTargetStreams().get( 0 ).setSubject( identicalTargetStepname );
   }
 
   public String getChangedTargetStepname() {
-    return changedTargetStepname;
+    return getTargetStepName( 1 );
   }
 
   public void setChangedTargetStepname( String changedTargetStepname ) {
-    this.changedTargetStepname = changedTargetStepname;
+    getStepIOMeta().getTargetStreams().get( 1 ).setSubject( changedTargetStepname );
   }
 
   public String getAddedTargetStepname() {
-    return addedTargetStepname;
+    return getTargetStepName( 2 );
   }
 
   public void setAddedTargetStepname( String addedTargetStepname ) {
-    this.addedTargetStepname = addedTargetStepname;
+    getStepIOMeta().getTargetStreams().get( 2 ).setSubject( addedTargetStepname );
   }
 
   public String getRemovedTargetStepname() {
-    return removedTargetStepname;
+    return getTargetStepName( 3 );
   }
 
   public void setRemovedTargetStepname( String removedTargetStepname ) {
-    this.removedTargetStepname = removedTargetStepname;
+    getStepIOMeta().getTargetStreams().get( 3 ).setSubject( removedTargetStepname );
   }
 
   public boolean isAddingFieldsList() {
@@ -320,35 +292,35 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   public StepMeta getIdenticalTargetStepMeta() {
-    return identicalTargetStepMeta;
+    return getStepIOMeta().getTargetStreams().get( 0 ).getStepMeta();
   }
 
   public void setIdenticalTargetStepMeta(StepMeta identicalTargetStepMeta) {
-    this.identicalTargetStepMeta = identicalTargetStepMeta;
+    getStepIOMeta().getTargetStreams().get( 0 ).setStepMeta(identicalTargetStepMeta);
   }
 
   public StepMeta getChangedTargetStepMeta() {
-    return changedTargetStepMeta;
+    return getStepIOMeta().getTargetStreams().get( 1 ).getStepMeta();
   }
 
   public void setChangedTargetStepMeta(StepMeta changedTargetStepMeta) {
-    this.changedTargetStepMeta = changedTargetStepMeta;
+    getStepIOMeta().getTargetStreams().get( 1 ).setStepMeta(changedTargetStepMeta);
   }
 
   public StepMeta getAddedTargetStepMeta() {
-    return addedTargetStepMeta;
+    return getStepIOMeta().getTargetStreams().get( 2 ).getStepMeta();
   }
 
   public void setAddedTargetStepMeta(StepMeta addedTargetStepMeta) {
-    this.addedTargetStepMeta = addedTargetStepMeta;
+    getStepIOMeta().getTargetStreams().get( 2 ).setStepMeta(addedTargetStepMeta);
   }
 
   public StepMeta getRemovedTargetStepMeta() {
-    return removedTargetStepMeta;
+    return getStepIOMeta().getTargetStreams().get( 3 ).getStepMeta();
   }
 
   public void setRemovedTargetStepMeta(StepMeta removedTargetStepMeta) {
-    this.removedTargetStepMeta = removedTargetStepMeta;
+    getStepIOMeta().getTargetStreams().get( 3 ).setStepMeta(removedTargetStepMeta);
   }
 
   public String getFieldsListFieldname() {
@@ -357,35 +329,5 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
 
   public void setFieldsListFieldname( String fieldsListFieldname ) {
     this.fieldsListFieldname = fieldsListFieldname;
-  }
-
-  /**
-   *  Hop exiting this step was removed
-   * @param toStep
-   * @return step was changed
-   */
-  @Override
-  public boolean cleanAfterHopFromRemove( StepMeta toStep ) {
-    if ( toStep == null || toStep.getName() == null ) {
-      return false;
-    }
-
-    boolean hasChanged = false;
-    String toStepName = toStep.getName();
-
-    if ( getIdenticalTargetStepMeta() != null && toStepName.equals( getIdenticalTargetStepMeta().getName() ) ) {
-      setIdenticalTargetStepMeta( null );
-      hasChanged = true;
-    } else if ( getChangedTargetStepMeta() != null && toStepName.equals( getChangedTargetStepMeta().getName() ) ) {
-      setChangedTargetStepMeta( null );
-      hasChanged = true;
-    } else if ( getAddedTargetStepMeta() != null && toStepName.equals( getAddedTargetStepMeta().getName() ) ) {
-      setAddedTargetStepMeta( null );
-      hasChanged = true;
-    } else if ( getRemovedTargetStepMeta() != null && toStepName.equals( getRemovedTargetStepMeta().getName() ) ) {
-      setRemovedTargetStepMeta( null );
-      hasChanged = true;
-    }
-    return hasChanged;
   }
 }
