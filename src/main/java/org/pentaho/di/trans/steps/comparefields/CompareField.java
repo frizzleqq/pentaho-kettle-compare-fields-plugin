@@ -20,7 +20,7 @@ public class CompareField {
   private String referenceFieldname;
   private String compareFieldname;
 
-  public CompareField( String referenceFieldname, String compareFieldname, boolean ignoringCase ) {
+  public CompareField( String referenceFieldname, String compareFieldname) {
     super();
     this.referenceFieldname = referenceFieldname;
     this.compareFieldname = compareFieldname;
@@ -79,31 +79,16 @@ public class CompareField {
     return referenceFieldname;
   }
 
-  public void setReferenceFieldname( String referenceFieldname ) {
-    this.referenceFieldname = referenceFieldname;
-  }
-
   public String getCompareFieldname() {
     return compareFieldname;
-  }
-
-  public void setCompareFieldname( String compareFieldname ) {
-    this.compareFieldname = compareFieldname;
   }
 
   public int getReferenceFieldIndex() {
     return referenceFieldIndex;
   }
 
-  public void setReferenceFieldIndex( int referenceFieldIndex ) {
-    this.referenceFieldIndex = referenceFieldIndex;
-  }
-
   public int getCompareFieldIndex() {
     return compareFieldIndex;
   }
 
-  public void setCompareFieldIndex( int compareFieldIndex ) {
-    this.compareFieldIndex = compareFieldIndex;
-  }
 }

@@ -37,20 +37,18 @@ public class CompareFields extends BaseStep implements StepInterface {
   private CompareFieldsMeta meta;
   private CompareFieldsData data;
 
-  public CompareFields( StepMeta stepMeta, StepDataInterface stepDataInterface,
-    int copyNr, TransMeta transMeta, Trans trans ) {
-
+  public CompareFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+                        TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
-
-    meta = (CompareFieldsMeta) getStepMeta().getStepMetaInterface();
-    data = (CompareFieldsData) stepDataInterface;
   }
 
   @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
+    meta = (CompareFieldsMeta) smi;
+    data = (CompareFieldsData) sdi;
+
     // Get one row from previous step(s).
-    //
     Object[] row = getRow();
 
     if ( row == null ) {
@@ -61,8 +59,7 @@ public class CompareFields extends BaseStep implements StepInterface {
     if ( first ) {
       first = false;
 
-      // determine the output fields...
-      //
+      // determine the output fields
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
@@ -70,8 +67,7 @@ public class CompareFields extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "CompareFields.Error.NoFieldsToCompare" ) );
       }
 
-      // Index the compare fields...
-      //
+      // Index the compare fields
       for ( CompareField field : meta.getCompareFields() ) {
         field.index( getInputRowMeta() );
       }
@@ -138,8 +134,7 @@ public class CompareFields extends BaseStep implements StepInterface {
         break;
     }
 
-    // Now that we have a result and a place to send the row, act upon it...
-    //
+    // Now that we have a result and a place to send the row, act upon it
     if ( outputRowSet != null ) {
       Object[] outputRow;
       if ( meta.isAddingFieldsList() ) {
@@ -200,7 +195,6 @@ public class CompareFields extends BaseStep implements StepInterface {
     }
 
     // Evaluate what we found
-    // 
     CompareResultType type;
     if ( allIdentical || ( verifyAdded && allReferenceNull && verifyRemoved && allCompareNull ) ) {
       type = CompareResultType.IDENTICAL;

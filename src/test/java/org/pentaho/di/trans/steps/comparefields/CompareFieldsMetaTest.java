@@ -160,6 +160,82 @@ public class CompareFieldsMetaTest {
     }
 
     @Test
+    public void testStreamTargets() {
+        CompareFieldsMeta compareFieldsMeta = new CompareFieldsMeta();
+        StepMeta identicalOutput = new StepMeta("identical", new DummyTransMeta());
+        StepMeta changedOutput = new StepMeta("changed", new DummyTransMeta());
+        StepMeta addedOutput = new StepMeta("added", new DummyTransMeta());
+        StepMeta removedOutput = new StepMeta("removed", new DummyTransMeta());
+
+        compareFieldsMeta.setIdenticalTargetStepname(identicalOutput.getName());
+        compareFieldsMeta.setChangedTargetStepname(changedOutput.getName());
+        compareFieldsMeta.setAddedTargetStepname(addedOutput.getName());
+        compareFieldsMeta.setRemovedTargetStepname(removedOutput.getName());
+        compareFieldsMeta.searchInfoAndTargetSteps(
+                ImmutableList.of(identicalOutput, changedOutput, addedOutput, removedOutput));
+
+        assertEquals("identical", compareFieldsMeta.getIdenticalTargetStepname() );
+        assertEquals("identical", compareFieldsMeta.getIdenticalTargetStepMeta().getName() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepname() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepMeta().getName() );
+        assertEquals("added", compareFieldsMeta.getAddedTargetStepname() );
+        assertEquals("added", compareFieldsMeta.getAddedTargetStepMeta().getName() );
+        assertEquals("removed", compareFieldsMeta.getRemovedTargetStepname() );
+        assertEquals("removed", compareFieldsMeta.getRemovedTargetStepMeta().getName() );
+    }
+
+    @Test
+    public void testStreamTargetsChangedOnly() {
+        CompareFieldsMeta compareFieldsMeta = new CompareFieldsMeta();
+        StepMeta changedOutput = new StepMeta("changed", new DummyTransMeta());
+
+        compareFieldsMeta.setChangedTargetStepname(changedOutput.getName());
+        compareFieldsMeta.searchInfoAndTargetSteps(
+                ImmutableList.of(changedOutput));
+
+        assertNull( compareFieldsMeta.getIdenticalTargetStepname() );
+        assertNull( compareFieldsMeta.getIdenticalTargetStepMeta() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepname() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepMeta().getName() );
+        assertNull( compareFieldsMeta.getAddedTargetStepname() );
+        assertNull( compareFieldsMeta.getAddedTargetStepMeta() );
+        assertNull( compareFieldsMeta.getRemovedTargetStepname() );
+        assertNull( compareFieldsMeta.getRemovedTargetStepMeta() );
+    }
+
+    @Test
+    public void testStreamTargetsRemoved() {
+        CompareFieldsMeta compareFieldsMeta = new CompareFieldsMeta();
+        StepMeta identicalOutput = new StepMeta("identical", new DummyTransMeta());
+        StepMeta changedOutput = new StepMeta("changed", new DummyTransMeta());
+
+        compareFieldsMeta.setIdenticalTargetStepname(identicalOutput.getName());
+        compareFieldsMeta.setChangedTargetStepname(changedOutput.getName());
+        compareFieldsMeta.searchInfoAndTargetSteps(
+                ImmutableList.of(identicalOutput, changedOutput));
+
+        assertEquals("identical", compareFieldsMeta.getIdenticalTargetStepname() );
+        assertEquals("identical", compareFieldsMeta.getIdenticalTargetStepMeta().getName() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepname() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepMeta().getName() );
+        assertNull( compareFieldsMeta.getAddedTargetStepname() );
+        assertNull( compareFieldsMeta.getAddedTargetStepMeta() );
+        assertNull( compareFieldsMeta.getRemovedTargetStepname() );
+        assertNull( compareFieldsMeta.getRemovedTargetStepMeta() );
+
+        compareFieldsMeta.setIdenticalTargetStepMeta( null );
+
+        assertEquals("identical", compareFieldsMeta.getIdenticalTargetStepname() );
+        assertNull( compareFieldsMeta.getIdenticalTargetStepMeta() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepname() );
+        assertEquals("changed", compareFieldsMeta.getChangedTargetStepMeta().getName() );
+        assertNull( compareFieldsMeta.getAddedTargetStepname() );
+        assertNull( compareFieldsMeta.getAddedTargetStepMeta() );
+        assertNull( compareFieldsMeta.getRemovedTargetStepname() );
+        assertNull( compareFieldsMeta.getRemovedTargetStepMeta() );
+    }
+
+    @Test
     public void testModifiedTarget() {
         CompareFieldsMeta compareFieldsMeta = new CompareFieldsMeta();
         StepMeta identicalOutput = new StepMeta( "identical", new DummyTransMeta() );

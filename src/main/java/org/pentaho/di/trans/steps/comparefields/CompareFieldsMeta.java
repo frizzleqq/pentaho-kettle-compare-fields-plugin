@@ -57,6 +57,7 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
   private static final int ADDED_TARGET_STREAM = 2;
   private static final String REMOVED_TARGET_STEP = "removed_target_step";
   private static final int REMOVED_TARGET_STREAM = 3;
+
   private static final String ADD_FIELDS_LIST = "add_fields_list";
   private static final String FIELDS_LIST_FIELD = "fields_list_field";
 
@@ -229,7 +230,7 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
 
   @Override
   public void resetStepIoMeta() {
-    // so this does not reset ioMeta (set StreamTargets null)
+    // prevent reset, this clears all stream targets
   }
 
   /**

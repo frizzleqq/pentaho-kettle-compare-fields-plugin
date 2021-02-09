@@ -367,6 +367,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     wChangedTarget.setText( getStepname( input.getChangedTargetStepMeta() ) );
     wAddedTarget.setText( getStepname( input.getAddedTargetStepMeta() ) );
     wRemovedTarget.setText( getStepname( input.getRemovedTargetStepMeta() ) );
+
     wAddChangedFields.setSelection( input.isAddingFieldsList() );
     wFieldsListField.setText( Const.NVL( input.getFieldsListFieldname(), "" ) );
 
@@ -410,6 +411,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     input.setChangedTargetStepMeta( findStep( wChangedTarget.getText() ) );
     input.setAddedTargetStepMeta( findStep( wAddedTarget.getText() ) );
     input.setRemovedTargetStepMeta( findStep( wRemovedTarget.getText() ) );
+
     input.setAddingFieldsList( wAddChangedFields.getSelection() );
     input.setFieldsListFieldname( wFieldsListField.getText() );
 
@@ -421,7 +423,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
 
       String referenceFieldname = item.getText( 1 );
       String compareFieldname = item.getText( 2 );
-      CompareField compareField = new CompareField( referenceFieldname, compareFieldname, false );
+      CompareField compareField = new CompareField( referenceFieldname, compareFieldname );
       input.getCompareFields().add( compareField );
     }
 
