@@ -9,6 +9,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
@@ -45,6 +48,7 @@ import org.w3c.dom.Node;
   forumUrl = "forums.pentaho.com/forumdisplay.php?135-Pentaho-Data-Integration-Kettle",
   image = "org/pentaho/di/trans/steps/comparefields/resources/CompareFields.svg"
 )
+@InjectionSupported( localizationPrefix = "CompareFields.Injection.", groups = { "COMPARE_FIELDS" } )
 public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface {
 
   private static Class<?> PKG = CompareFieldsMeta.class; // for i18n purposes, needed by Translator2!!
@@ -63,9 +67,12 @@ public class CompareFieldsMeta extends BaseStepMeta implements StepMetaInterface
 
   private static final String XML_TAG_FIELDS = "fields";
 
+  @InjectionDeep
   private List<CompareField> compareFields;
 
+  @Injection( name = "ADD_FIELD_LIST" )
   private boolean addingFieldsList;
+  @Injection( name = "FIELD_LIST_FIELD_NAME" )
   private String fieldsListFieldname;
 
   public CompareFieldsMeta() {
