@@ -15,9 +15,19 @@ The step detects identical, changed, added and removed rows.
 An optional field can be specified that will include names of columns where changes were detected
 as a comma separated value.  
 
-## Building
+## How to build 
 
-Run `mvn clean package`.
+### Pre-requisites for building the project:
+* Maven, version 3+
+* Java JDK 1.8
+* This [settings.xml](https://raw.githubusercontent.com/pentaho/maven-parent-poms/master/maven-support-files/settings.xml) in your <user-home>/.m2 directory
+
+
+### Building it
+
+```
+$ mvn clean package
+```
 
 ## Example
 

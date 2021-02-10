@@ -6,12 +6,23 @@
     <formats>
         <format>zip</format>
     </formats>
+
+    <baseDirectory>${project.artifactId}</baseDirectory>
+
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>${file.separator}</outputDirectory>
             <includes>
-                <include>*.jar</include>
+                <include>${project.artifactId}-${project.version}.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/assembly</directory>
+            <outputDirectory>${file.separator}</outputDirectory>
+            <filtered>true</filtered>
+            <includes>
+                <include>version.xml</include>
             </includes>
         </fileSet>
     </fileSets>
