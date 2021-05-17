@@ -1,28 +1,27 @@
-package org.pentaho.di.trans.steps.comparefields;
+package org.apache.hop.pipeline.transforms.comparefields;
 
 /**
  * 
  */
 
+import org.apache.hop.core.IRowSet;
+import org.apache.hop.core.exception.HopException;
+import org.apache.hop.core.exception.HopValueException;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.IValueMeta;
+import org.apache.hop.core.row.RowDataUtil;
+import org.apache.hop.core.util.Utils;
+import org.apache.hop.i18n.BaseMessages;
+import org.apache.hop.pipeline.Pipeline;
+import org.apache.hop.pipeline.PipelineMeta;
+import org.apache.hop.pipeline.transform.BaseTransform;
+import org.apache.hop.pipeline.transform.ITransform;
+import org.apache.hop.pipeline.transform.TransformMeta;
+import org.apache.hop.pipeline.transform.errorhandling.IStream;
+import org.apache.hop.pipeline.transforms.comparefields.CompareResult.CompareResultType;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.pentaho.di.core.RowSet;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.comparefields.CompareResult.CompareResultType;
 
 /**
  * Compare a list of 2 field each with each other.
@@ -30,23 +29,17 @@ import org.pentaho.di.trans.steps.comparefields.CompareResult.CompareResultType;
  * @author matt
  *
  */
-public class CompareFields extends BaseStep implements StepInterface {
+public class CompareFields extends BaseTransform<CompareFieldsMeta, CompareFieldsData> implements ITransform<CompareFieldsMeta, CompareFieldsData> {
 
   private static Class<?> PKG = CompareFields.class; // for i18n purposes, needed by Translator2!!
 
-  private CompareFieldsMeta meta;
-  private CompareFieldsData data;
-
-  public CompareFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-                        TransMeta transMeta, Trans trans ) {
-    super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  public CompareFields(TransformMeta transformMeta, CompareFieldsMeta meta, CompareFieldsData data, int copyNr, PipelineMeta pipelineMeta,
+                       Pipeline pipeline ) {
+    super( transformMeta, meta, data, copyNr, pipelineMeta, pipeline );
   }
 
   @Override
-  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-
-    meta = (CompareFieldsMeta) smi;
-    data = (CompareFieldsData) sdi;
+  public boolean processRow() throws HopException {
 
     // Get one row from previous step(s).
     Object[] row = getRow();
@@ -61,10 +54,10 @@ public class CompareFields extends BaseStep implements StepInterface {
 
       // determine the output fields
       data.outputRowMeta = getInputRowMeta().clone();
-      meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      meta.getFields( getInputRowMeta(), getTransformName(), null, null, this, metadataProvider );
 
       if ( meta.getCompareFields().isEmpty() ) {
-        throw new KettleException( BaseMessages.getString( PKG, "CompareFields.Error.NoFieldsToCompare" ) );
+        throw new HopException( BaseMessages.getString( PKG, "CompareFields.Error.NoFieldsToCompare" ) );
       }
 
       // Index the compare fields
@@ -72,43 +65,45 @@ public class CompareFields extends BaseStep implements StepInterface {
         field.index( getInputRowMeta() );
       }
 
-      if ( meta.getIdenticalTargetStepMeta() != null ) {
-        data.identicalRowSet = findOutputRowSet( meta.getIdenticalTargetStepMeta().getName() );
+      List<IStream> targetStreams = meta.getTransformIOMeta().getTargetStreams();
+
+      if ( meta.getIdenticalTargetTransformMeta() != null ) {
+        data.identicalRowSet = findOutputRowSet(meta.getIdenticalTargetTransformMeta().getName()  );
         if ( data.identicalRowSet == null ) {
-          throw new KettleException(
+          throw new HopException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindIdenticalOutputStep",
-              meta.getIdenticalTargetStepMeta().getName() ) );
+              meta.getIdenticalTargetTransformMeta().getName() ) );
         }
       }
-      if ( meta.getChangedTargetStepMeta() != null ) {
-        data.changedRowSet = findOutputRowSet( meta.getChangedTargetStepMeta().getName() );
+      if ( meta.getChangedTargetTransformMeta() != null ) {
+        data.changedRowSet = findOutputRowSet( meta.getChangedTargetTransformMeta().getName() );
         if ( data.changedRowSet == null ) {
-          throw new KettleException(
+          throw new HopException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindChangedOutputStep",
-              meta.getChangedTargetStepMeta().getName() ) );
+              meta.getChangedTargetTransformMeta().getName() ) );
         }
       }
-      if ( meta.getAddedTargetStepMeta() != null ) {
-        data.addedRowSet = findOutputRowSet( meta.getAddedTargetStepMeta().getName() );
+      if ( meta.getAddedTargetTransformMeta() != null ) {
+        data.addedRowSet = findOutputRowSet( meta.getAddedTargetTransformMeta().getName() );
         if ( data.addedRowSet == null ) {
-          throw new KettleException(
+          throw new HopException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindAddedOutputStep",
-              meta.getAddedTargetStepMeta().getName() ) );
+              meta.getAddedTargetTransformMeta().getName() ) );
         }
       }
-      if ( meta.getRemovedTargetStepMeta() != null ) {
-        data.removedRowSet = findOutputRowSet( meta.getRemovedTargetStepMeta().getName() );
+      if ( meta.getRemovedTargetTransformMeta() != null ) {
+        data.removedRowSet = findOutputRowSet( meta.getRemovedTargetTransformMeta().getName() );
         if ( data.removedRowSet == null ) {
-          throw new KettleException(
+          throw new HopException(
             BaseMessages.getString( PKG, "CompareFields.Error.UnableToFindRemovedOutputStep",
-              meta.getRemovedTargetStepMeta().getName() ) );
+              meta.getRemovedTargetTransformMeta().getName() ) );
         }
       }
     }
 
     CompareResult result = compareFields( getInputRowMeta(), row );
 
-    RowSet outputRowSet = null;
+    IRowSet outputRowSet = null;
     switch ( result.getType() ) {
       case IDENTICAL:
         if ( data.identicalRowSet != null ) {
@@ -148,7 +143,7 @@ public class CompareFields extends BaseStep implements StepInterface {
     return true;
   }
 
-  private CompareResult compareFields( RowMetaInterface rowMeta, Object[] row ) throws KettleValueException {
+  private CompareResult compareFields(IRowMeta rowMeta, Object[] row ) throws HopValueException {
 
     List<String> fieldsList = null;
 
@@ -168,10 +163,10 @@ public class CompareFields extends BaseStep implements StepInterface {
     //
     for ( CompareField field : compareFields ) {
 
-      ValueMetaInterface referenceValueMeta = rowMeta.getValueMeta( field.getReferenceFieldIndex() );
+      IValueMeta referenceValueMeta = rowMeta.getValueMeta( field.getReferenceFieldIndex() );
       Object referenceValue = row[field.getReferenceFieldIndex()];
 
-      ValueMetaInterface compareValueMeta = rowMeta.getValueMeta( field.getCompareFieldIndex() );
+      IValueMeta compareValueMeta = rowMeta.getValueMeta( field.getCompareFieldIndex() );
       Object compareValue = row[field.getCompareFieldIndex()];
 
       int result = referenceValueMeta.compare( referenceValue, compareValueMeta, compareValue );

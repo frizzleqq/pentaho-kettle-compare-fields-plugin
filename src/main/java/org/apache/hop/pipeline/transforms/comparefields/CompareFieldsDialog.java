@@ -20,48 +20,34 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.trans.steps.comparefields;
+package org.apache.hop.pipeline.transforms.comparefields;
 
-import java.util.Arrays;
-
+import org.apache.hop.core.Const;
+import org.apache.hop.core.exception.HopTransformException;
+import org.apache.hop.core.row.IRowMeta;
+import org.apache.hop.core.row.RowMeta;
+import org.apache.hop.core.util.Utils;
+import org.apache.hop.core.variables.IVariables;
+import org.apache.hop.i18n.BaseMessages;
+import org.apache.hop.pipeline.PipelineMeta;
+import org.apache.hop.pipeline.transform.BaseTransformMeta;
+import org.apache.hop.pipeline.transform.ITransformDialog;
+import org.apache.hop.pipeline.transform.TransformMeta;
+import org.apache.hop.ui.core.dialog.ErrorDialog;
+import org.apache.hop.ui.core.widget.ColumnInfo;
+import org.apache.hop.ui.core.widget.TableView;
+import org.apache.hop.ui.pipeline.transform.BaseTransformDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.comparefields.CompareField;
-import org.pentaho.di.trans.steps.comparefields.CompareFieldsMeta;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.eclipse.swt.widgets.*;
 
-public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInterface {
+import java.util.Arrays;
+
+public class CompareFieldsDialog extends BaseTransformDialog implements ITransformDialog {
   private static Class<?> PKG = CompareFieldsMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlFields;
@@ -84,12 +70,11 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
 
   private CompareFieldsMeta input;
 
-  private RowMetaInterface inputFields;
   private String[] inputFieldNames;
   private String[] outputStepNames;
 
-  public CompareFieldsDialog( Shell parent, Object in, TransMeta tr, String sname ) {
-    super( parent, (BaseStepMeta) in, tr, sname );
+  public CompareFieldsDialog(Shell parent, IVariables variables, Object in, PipelineMeta tr, String sname ) {
+    super(parent, variables, (BaseTransformMeta) in, tr, sname );
     input = (CompareFieldsMeta) in;
   }
 
@@ -101,11 +86,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     props.setLook( shell );
     setShellImage( shell, input );
 
-    ModifyListener lsMod = new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
-        input.setChanged();
-      }
-    };
+    ModifyListener lsMod = e -> input.setChanged();
     backupChanged = input.hasChanged();
 
     FormLayout formLayout = new FormLayout();
@@ -118,11 +99,10 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
 
-    // TODO: grab field list in thread in the background...
-    //
+    IRowMeta inputFields;
     try {
-      inputFields = transMeta.getPrevStepFields( stepMeta );
-    } catch ( KettleStepException ex ) {
+      inputFields = pipelineMeta.getPrevTransformFields( variables, transformName );
+    } catch (HopTransformException ex ) {
       inputFields = new RowMeta();
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "CompareFieldsDialog.Exception.CantGetFieldsFromPreviousSteps.Title" ),
@@ -133,28 +113,28 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
 
     // TODO: grab field list in thread in the background...
     //
-    outputStepNames = transMeta.getNextStepNames( stepMeta );
+    outputStepNames = pipelineMeta.getNextTransformNames( transformMeta );
     Arrays.sort( outputStepNames );
 
     // Stepname line
-    wlStepname = new Label( shell, SWT.RIGHT );
-    wlStepname.setText( BaseMessages.getString( PKG, "CompareFieldsDialog.Stepname.Label" ) );
-    props.setLook( wlStepname );
-    fdlStepname = new FormData();
-    fdlStepname.left = new FormAttachment( 0, 0 );
-    fdlStepname.right = new FormAttachment( middle, 0 );
-    fdlStepname.top = new FormAttachment( 0, margin );
-    wlStepname.setLayoutData( fdlStepname );
-    wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wStepname.setText( stepname );
-    props.setLook( wStepname );
-    wStepname.addModifyListener( lsMod );
-    fdStepname = new FormData();
-    fdStepname.left = new FormAttachment( middle, margin );
-    fdStepname.top = new FormAttachment( 0, margin );
-    fdStepname.right = new FormAttachment( 100, 0 );
-    wStepname.setLayoutData( fdStepname );
-    Control lastControl = wStepname;
+    wlTransformName = new Label( shell, SWT.RIGHT );
+    wlTransformName.setText( BaseMessages.getString( PKG, "CompareFieldsDialog.TransformName.Label" ) );
+    props.setLook( wlTransformName );
+    fdlTransformName = new FormData();
+    fdlTransformName.left = new FormAttachment( 0, 0 );
+    fdlTransformName.right = new FormAttachment( middle, 0 );
+    fdlTransformName.top = new FormAttachment( 0, margin );
+    wlTransformName.setLayoutData( fdlTransformName );
+    wTransformName = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wTransformName.setText( transformName );
+    props.setLook( wTransformName );
+    wTransformName.addModifyListener( lsMod );
+    fdTransformName = new FormData();
+    fdTransformName.left = new FormAttachment( middle, margin );
+    fdTransformName.top = new FormAttachment( 0, margin );
+    fdTransformName.right = new FormAttachment( 100, 0 );
+    wTransformName.setLayoutData( fdTransformName );
+    Control lastControl = wTransformName;
 
     wlIdenticalTarget = new Label( shell, SWT.RIGHT );
     wlIdenticalTarget.setText( BaseMessages.getString( PKG, "CompareFieldsDialog.IdenticalTarget.Label" ) );
@@ -268,12 +248,12 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     lastControl = wFieldsListField;
 
     // Some buttons
-    wOK = new Button( shell, SWT.PUSH );
-    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wOk = new Button( shell, SWT.PUSH );
+    wOk.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, null );
+    setButtonPositions( new Button[] { wOk, wCancel }, margin, null );
 
     // The name of the field to validate
     //
@@ -292,7 +272,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
       new ColumnInfo( BaseMessages.getString( PKG, "CompareFieldsDialog.CompareField.Label" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, inputFieldNames ),
     };
-    wFields = new TableView( transMeta, shell,
+    wFields = new TableView( variables, shell,
       SWT.MULTI | SWT.LEFT | SWT.BORDER, fieldColumns, input.getCompareFields().size(),
       lsMod, props );
     props.setLook( wFields );
@@ -300,23 +280,15 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
     fdFieldName.left = new FormAttachment( middle, margin );
     fdFieldName.right = new FormAttachment( 100, 0 );
     fdFieldName.top = new FormAttachment( lastControl, margin );
-    fdFieldName.bottom = new FormAttachment( wOK, -margin * 2 );
+    fdFieldName.bottom = new FormAttachment( wOk, -margin * 2 );
     wFields.setLayoutData( fdFieldName );
 
     // Add listeners
-    lsCancel = new Listener() {
-      public void handleEvent( Event e ) {
-        cancel();
-      }
-    };
-    lsOK = new Listener() {
-      public void handleEvent( Event e ) {
-        ok();
-      }
-    };
+    lsCancel = e -> cancel();
+    lsOk = e -> ok();
 
     wCancel.addListener( SWT.Selection, lsCancel );
-    wOK.addListener( SWT.Selection, lsOK );
+    wOk.addListener( SWT.Selection, lsOk );
 
     lsDef = new SelectionAdapter() {
       public void widgetDefaultSelected( SelectionEvent e ) {
@@ -324,7 +296,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
       }
     };
 
-    wStepname.addSelectionListener( lsDef );
+    wTransformName.addSelectionListener( lsDef );
     wIdenticalTarget.addSelectionListener( lsDef );
     wChangedTarget.addSelectionListener( lsDef );
     wAddedTarget.addSelectionListener( lsDef );
@@ -349,7 +321,7 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
         display.sleep();
       }
     }
-    return stepname;
+    return transformName;
   }
 
   protected void enableWidgets() {
@@ -363,10 +335,10 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
    * Copy information from the meta-data input to the dialog fields.
    */
   public void getData() {
-    wIdenticalTarget.setText( getStepname( input.getIdenticalTargetStepMeta() ) );
-    wChangedTarget.setText( getStepname( input.getChangedTargetStepMeta() ) );
-    wAddedTarget.setText( getStepname( input.getAddedTargetStepMeta() ) );
-    wRemovedTarget.setText( getStepname( input.getRemovedTargetStepMeta() ) );
+    wIdenticalTarget.setText( getTransformName( input.getIdenticalTargetTransformMeta() ) );
+    wChangedTarget.setText( getTransformName( input.getChangedTargetTransformMeta() ) );
+    wAddedTarget.setText( getTransformName( input.getAddedTargetTransformMeta() ) );
+    wRemovedTarget.setText( getTransformName( input.getRemovedTargetTransformMeta() ) );
 
     wAddChangedFields.setSelection( input.isAddingFieldsList() );
     wFieldsListField.setText( Const.NVL( input.getFieldsListFieldname(), "" ) );
@@ -385,11 +357,11 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
 
     enableWidgets();
 
-    wStepname.selectAll();
-    wStepname.setFocus();
+    wTransformName.selectAll();
+    wTransformName.setFocus();
   }
 
-  private String getStepname( StepMeta stepMeta ) {
+  private String getTransformName(TransformMeta stepMeta ) {
     if ( stepMeta == null ) {
       return "";
     }
@@ -397,20 +369,20 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void cancel() {
-    stepname = null;
+    transformMeta = null;
     input.setChanged( backupChanged );
     dispose();
   }
 
   private void ok() {
-    if ( Utils.isEmpty( wStepname.getText() ) ) {
+    if ( Utils.isEmpty( wTransformName.getText() ) ) {
       return;
     }
 
-    input.setIdenticalTargetStepMeta( findStep( wIdenticalTarget.getText() ) );
-    input.setChangedTargetStepMeta( findStep( wChangedTarget.getText() ) );
-    input.setAddedTargetStepMeta( findStep( wAddedTarget.getText() ) );
-    input.setRemovedTargetStepMeta( findStep( wRemovedTarget.getText() ) );
+    input.setIdenticalTargetTransformMeta( pipelineMeta.findTransform( wIdenticalTarget.getText() ) );
+    input.setChangedTargetTransformMeta( pipelineMeta.findTransform( wChangedTarget.getText() ) );
+    input.setAddedTargetTransformMeta( pipelineMeta.findTransform( wAddedTarget.getText() ) );
+    input.setRemovedTargetTransformMeta( pipelineMeta.findTransform( wRemovedTarget.getText() ) );
 
     input.setAddingFieldsList( wAddChangedFields.getSelection() );
     input.setFieldsListFieldname( wFieldsListField.getText() );
@@ -427,12 +399,8 @@ public class CompareFieldsDialog extends BaseStepDialog implements StepDialogInt
       input.getCompareFields().add( compareField );
     }
 
-    stepname = wStepname.getText(); // return value
+    transformName = wTransformName.getText(); // return value
 
     dispose();
-  }
-
-  private StepMeta findStep( String stepName ) {
-    return transMeta.findStep( stepName );
   }
 }

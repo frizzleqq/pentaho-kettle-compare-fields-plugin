@@ -1,4 +1,4 @@
-package org.pentaho.di.trans.steps.comparefields;
+package org.apache.hop.pipeline.transforms.comparefields;
 
 
 public class CompareResult {
